@@ -19,7 +19,7 @@ Add this to your package's `pubspec.yaml` file:
 dependencies:
   flutter_pip:
     git:
-      url: ""
+      url: https://github.com/SpaceXM/flutter_pip.git
 ```
 
 ### Usage
