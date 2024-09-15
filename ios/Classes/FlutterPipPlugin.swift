@@ -2,41 +2,64 @@ import Flutter
 import UIKit
 import AVKit
 
-public class FlutterPipPlugin: NSObject, FlutterPlugin {
-  public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "flutter_pip", binaryMessenger: registrar.messenger())
-    let instance = FlutterPipPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
+public class SwiftFlutterPipPlugin: NSObject, FlutterPlugin {
+    private var pipController: AVPictureInPictureController?
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    switch call.method {
-    case "isPipSupported":
-      result(AVPictureInPictureController.isPictureInPictureSupported())
-    case "startPipMode":
-      startPipMode()
-      result(nil)
-    case "stopPipMode":
-      stopPipMode()
-      result(nil)
-    default:
-      result(FlutterMethodNotImplemented)
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        let channel = FlutterMethodChannel(name: "flutter_pip", binaryMessenger: registrar.messenger())
+        let instance = SwiftFlutterPipPlugin()
+        registrar.addMethodCallDelegate(instance, channel: channel)
     }
-  }
 
-  private func startPipMode() {
-    if let pipController = AVPictureInPictureController.shared {
-      if pipController.isPictureInPicturePossible {
-        pipController.startPictureInPicture()
-      }
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        switch call.method {
+        case "isPipSupported":
+            result(AVPictureInPictureController.isPictureInPictureSupported())
+        case "startPipMode":
+            startPipMode(result: result)
+        case "stopPipMode":
+            stopPipMode(result: result)
+        default:
+            result(FlutterMethodNotImplemented)
+        }
     }
-  }
 
-  private func stopPipMode() {
-    if let pipController = AVPictureInPictureController.shared {
-      if pipController.isPictureInPictureActive {
-        pipController.stopPictureInPicture()
-      }
+    private func startPipMode(result: @escaping FlutterResult) {
+        guard AVPictureInPictureController.isPictureInPictureSupported() else {
+            result(FlutterError(code: "PIP_NOT_SUPPORTED", message: "Picture in Picture is not supported on this device", details: nil))
+            return
+        }
+
+        // Create a basic AVPlayerLayer if not already present
+        if pipController == nil {
+            let playerLayer = AVPlayerLayer(player: AVPlayer())
+            pipController = AVPictureInPictureController(playerLayer: playerLayer)
+        }
+
+        guard let pipController = pipController else {
+            result(FlutterError(code: "PIP_CONTROLLER_UNAVAILABLE", message: "Unable to create PiP controller", details: nil))
+            return
+        }
+
+        if pipController.isPictureInPicturePossible {
+            pipController.startPictureInPicture()
+            result(nil)
+        } else {
+            result(FlutterError(code: "PIP_NOT_POSSIBLE", message: "Picture in Picture is not possible at this time", details: nil))
+        }
     }
-  }
+
+    private func stopPipMode(result: @escaping FlutterResult) {
+        guard let pipController = pipController else {
+            result(FlutterError(code: "PIP_CONTROLLER_UNAVAILABLE", message: "PiP controller not initialized", details: nil))
+            return
+        }
+
+        if pipController.isPictureInPictureActive {
+            pipController.stopPictureInPicture()
+            result(nil)
+        } else {
+            result(FlutterError(code: "PIP_NOT_ACTIVE", message: "Picture in Picture is not currently active", details: nil))
+        }
+    }
 }
