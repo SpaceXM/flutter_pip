@@ -2,12 +2,12 @@ import Flutter
 import UIKit
 import AVKit
 
-public class SwiftFlutterPipPlugin: NSObject, FlutterPlugin {
+@objc public class FlutterPipPlugin: NSObject, FlutterPlugin {
     private var pipController: AVPictureInPictureController?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "flutter_pip", binaryMessenger: registrar.messenger())
-        let instance = SwiftFlutterPipPlugin()
+        let instance = FlutterPipPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
@@ -30,7 +30,6 @@ public class SwiftFlutterPipPlugin: NSObject, FlutterPlugin {
             return
         }
 
-        // Create a basic AVPlayerLayer if not already present
         if pipController == nil {
             let playerLayer = AVPlayerLayer(player: AVPlayer())
             pipController = AVPictureInPictureController(playerLayer: playerLayer)
