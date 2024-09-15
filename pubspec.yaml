@@ -1,6 +1,6 @@
 name: flutter_pip
 description: "A Flutter plugin to enter PiP Mode in Android e iOS"
-version: 0.0.2
+version: 0.0.3
 homepage:
 
 environment:
