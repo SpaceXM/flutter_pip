@@ -57,7 +57,11 @@ class FlutterPipPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         }
       }
       "isPipActive" -> {
-        result.success(activity?.isInPictureInPictureMode ?: false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          result.success(activity?.isInPictureInPictureMode ?: false)
+        } else {
+          result.success(false)
+        }
       }
       else -> {
         result.notImplemented()
@@ -97,15 +101,21 @@ class FlutterPipPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   private fun registerPipReceiver(events: EventChannel.EventSink?) {
-    pipReceiver = object : BroadcastReceiver() {
-      override fun onReceive(context: Context?, intent: Intent?) {
-        if (intent?.action == Intent.ACTION_PICTURE_IN_PICTURE_MODE_CHANGED) {
-          val isInPipMode = activity?.isInPictureInPictureMode ?: false
-          events?.success(isInPipMode)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      pipReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+          if (intent?.action == "android.intent.action.PICTURE_IN_PICTURE_MODE_CHANGED") {
+            val isInPipMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+              activity?.isInPictureInPictureMode ?: false
+            } else {
+              false
+            }
+            events?.success(isInPipMode)
+          }
         }
       }
+      activity?.registerReceiver(pipReceiver, IntentFilter("android.intent.action.PICTURE_IN_PICTURE_MODE_CHANGED"))
     }
-    activity?.registerReceiver(pipReceiver, IntentFilter(Intent.ACTION_PICTURE_IN_PICTURE_MODE_CHANGED))
   }
 
   private fun unregisterPipReceiver() {
