@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _checkPipSupport() async {
     bool isPipSupported;
     try {
-      isPipSupported = await MyPipPackage.isPipSupported;
+      isPipSupported = await FlutterPip.isPipSupported;
     } catch (e) {
       isPipSupported = false;
       print('Error checking PiP support: $e');
@@ -57,12 +57,12 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () async {
                     try {
                       if (Platform.isAndroid) {
-                        await MyPipPackage.enterPipMode(
+                        await FlutterPip.enterPipMode(
                           aspectRatioWidth: 16,
                           aspectRatioHeight: 9,
                         );
                       } else if (Platform.isIOS) {
-                        await MyPipPackage.startPipMode();
+                        await FlutterPip.enterPipMode();
                       }
                     } catch (e) {
                       print('Error entering PiP mode: $e');
@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        await MyPipPackage.stopPipMode();
+                        await FlutterPip.stopPipMode();
                       } catch (e) {
                         print('Error stopping PiP mode: $e');
                       }
