@@ -1,4 +1,4 @@
-package com.example.my_pip_package
+package com.spacex.flutter_pip
 
 import androidx.annotation.NonNull
 import android.app.Activity
@@ -14,12 +14,12 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
-class MyPipPackagePlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
+class FlutterPipPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var channel : MethodChannel
   private var activity: Activity? = null
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "my_pip_package")
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_pip")
     channel.setMethodCallHandler(this)
   }
 

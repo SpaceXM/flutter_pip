@@ -2,10 +2,10 @@ import Flutter
 import UIKit
 import AVKit
 
-public class SwiftMyPipPackagePlugin: NSObject, FlutterPlugin {
+public class FlutterPipPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "my_pip_package", binaryMessenger: registrar.messenger())
-    let instance = SwiftMyPipPackagePlugin()
+    let channel = FlutterMethodChannel(name: "flutter_pip", binaryMessenger: registrar.messenger())
+    let instance = FlutterPipPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
