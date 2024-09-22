@@ -114,7 +114,12 @@ class FlutterPipPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
           }
         }
       }
-      activity?.registerReceiver(pipReceiver, IntentFilter("android.intent.action.PICTURE_IN_PICTURE_MODE_CHANGED"))
+      val intentFilter = IntentFilter("android.intent.action.PICTURE_IN_PICTURE_MODE_CHANGED")
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        activity?.registerReceiver(pipReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+      } else {
+        activity?.registerReceiver(pipReceiver, intentFilter)
+      }
     }
   }
 
